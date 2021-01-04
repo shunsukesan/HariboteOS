@@ -1,4 +1,4 @@
-TOOLPATH = ../../z_tools/
+TOOLPATH = ../z_tools/
 MAKE     = make -r
 NASK     = $(TOOLPATH)nask
 EDIMG    = $(TOOLPATH)edimg
