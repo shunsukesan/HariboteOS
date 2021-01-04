@@ -51,7 +51,7 @@ fin:
 
 msg:
 		DB		0x0a, 0x0a		; 改行を2つ
-		DB		"hello, world"
+		DB		"hello, shunsuke"
 		DB		0x0a			; 改行
 		DB		0
 
