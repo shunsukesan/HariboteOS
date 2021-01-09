@@ -1,5 +1,5 @@
-TOOLPATH = ../../z_tools/
-INCPATH  = ../../z_tools/haribote/
+TOOLPATH = ../z_tools/
+INCPATH  = ../z_tools/haribote/
 
 MAKE     = $(TOOLPATH)make -r
 EDIMG    = $(TOOLPATH)edimg
@@ -45,7 +45,7 @@ haribote.sys : asmhead.bin bootpack.hrb Makefile
 	cat asmhead.bin bootpack.hrb > haribote.sys
 
 haribote.img : ipl10.bin haribote.sys Makefile
-	$(EDIMG)   imgin:../../z_tools/fdimg0at.tek \
+	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
 		copy from:haribote.sys to:@: \
 		imgout:haribote.img
@@ -57,8 +57,8 @@ img :
 
 run :
 	$(MAKE) img
-	$(COPY) haribote.img ../../z_tools/qemu/fdimage0.bin
-	$(MAKE) -C ../../z_tools/qemu
+	$(COPY) haribote.img ../z_tools/qemu/fdimage0.bin
+	$(MAKE) -C ../z_tools/qemu
 
 install :
 	$(MAKE) img
