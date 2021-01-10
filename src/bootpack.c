@@ -43,7 +43,7 @@ void HariMain(void)
 
 	init_palette();
 	init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfont8(binfo->vram, binfo->scrnx, binfo->scrny, 10, 10, COL8_FFFFFF, font_A);	
+	putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, font_A);	
 
 	for (;;) {
 		io_hlt();
