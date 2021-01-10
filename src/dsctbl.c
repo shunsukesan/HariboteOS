@@ -7,21 +7,21 @@ void init_gdtidt(void)
 	int i;
 
 	/* GDTの初期化 */
-	for (i = 0; i < 8192; i++) {
+	for (i = 0; i <= LIMIT_GDT / 8; i++) {
 		set_segmdesc(gdt + i, 0, 0, 0);
 	}
-    set_segmdesc(gdt + 1, 0xffffffff,   0x00000000, AR_DATA32_RW);
+	set_segmdesc(gdt + 1, 0xffffffff,   0x00000000, AR_DATA32_RW);
 	set_segmdesc(gdt + 2, LIMIT_BOTPAK, ADR_BOTPAK, AR_CODE32_ER);
 	load_gdtr(LIMIT_GDT, ADR_GDT);
 
 	/* IDTの初期化 */
-    for (i = 0; i <= LIMIT_IDT / 8; i++) {
+	for (i = 0; i <= LIMIT_IDT / 8; i++) {
 		set_gatedesc(idt + i, 0, 0, 0);
 	}
 	load_idtr(LIMIT_IDT, ADR_IDT);
 
-    /* IDTの設定 */
-    set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32);
+	/* IDTの設定 */
+	set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32);
 	set_gatedesc(idt + 0x27, (int) asm_inthandler27, 2 * 8, AR_INTGATE32);
 	set_gatedesc(idt + 0x2c, (int) asm_inthandler2c, 2 * 8, AR_INTGATE32);
 
