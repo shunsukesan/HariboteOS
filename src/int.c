@@ -29,7 +29,7 @@ void inthandler21(int *esp)
 {
     struct BOOTINFO *binfo = (struct BOOTINFO *) ADR_BOOTINFO;
 	unsigned char data, s[4];
-    io_out(PIC0_OCW2, 0x61); /* IRQ-01受付完了をPICに通知 */
+    io_out8(PIC0_OCW2, 0x61); /* IRQ-01受付完了をPICに通知 */
     data = io_in8(PORT_KEYDAT);
 
     sprintf(s, "%02X", data);
