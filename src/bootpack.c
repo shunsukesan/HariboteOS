@@ -8,6 +8,9 @@ void HariMain(void)
 	int mx, my;
 
 	init_gdtidt();
+	init_pic();
+	io_sti(); /* IDT/PICの初期化が終わったのでCPUの割り込み禁止を解除 */
+
 	init_palette();
 	init_screen8(binfo->vram, binfo->scrnx, binfo->scrny);
 	mx = (binfo->scrnx - 16) / 2;
