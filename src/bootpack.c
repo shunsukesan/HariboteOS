@@ -93,10 +93,10 @@ unsigned int memtest(unsigned int start, unsigned int end)
 	unsigned int eflg, cr0, i;
 
 	// 386か486かのチェック
-	eflg = io_read_eflags();
+	eflg = io_load_eflags();
 	eflg |= EFLAGS_AC_BIT;
 	io_store_eflags(eflg);
-	eflg = io_read_eflags();
+	eflg = io_load_eflags();
 	if ((eflg & EFLAGS_AC_BIT) != 0) { // 386ではAC=1にしても自動で0に戻る
 		flg486 = 1;
 	}
