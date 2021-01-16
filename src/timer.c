@@ -31,7 +31,7 @@ void inthandler20(int *esp)
 void settimer(unsigned int timeout, struct FIFO8 *fifo, unsigned char data)
 {
     int eflags;
-    eflags = ip_load_eflags();
+    eflags = io_load_eflags();
     io_cli();
     timerctl.timeout = timeout;
     timerctl.fifo = fifo;
