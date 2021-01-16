@@ -3,6 +3,8 @@
 #define PIT_CTRL 0x0043
 #define PIT_CNT0 0x0040
 
+struct TIMERCTL timerctl;
+
 void init_pit(void)
 {
     io_out8(PIT_CTRL, 0x34);
