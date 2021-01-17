@@ -2,7 +2,7 @@
 
 #define FLAGS_OVERRUN 0x0001
 
-void fifo8_init(struct FIFO32 *fifo, int size, int *buf)
+void fifo32_init(struct FIFO32 *fifo, int size, int *buf)
 {
 	fifo->size = size;
 	fifo->buf = buf;
