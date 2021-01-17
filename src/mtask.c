@@ -5,18 +5,18 @@ struct TIMER *task_timer;
 
 struct TASK *task_init(struct MEMMAN *memman)
 {
-    int i;
-    struct TASK *task;
-    struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
-    taskctl = (struct TASKCTL *) memman_alloc_4k(memman, sizeof (struct TASKCTL));
-    for (i = 0; i < MAX_TASKS; i++) {
-        taskctl->tasks0[i].flags = 0;
-        taskctl->tasks0[i].sel = (TASK_GDT0 + i) * 8;
-        set_segmdesc(gdt + TASK_GDT0 + i, 103, (int) &taskctl->tasks0[i].tss, AR_TSS32);
-    }
-    task = task_alloc();
-    task->flags = 2; /* 動作中マーク */
-    task->priority = 2; // 0.02s
+	int i;
+	struct TASK *task;
+	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
+	taskctl = (struct TASKCTL *) memman_alloc_4k(memman, sizeof (struct TASKCTL));
+	for (i = 0; i < MAX_TASKS; i++) {
+		taskctl->tasks0[i].flags = 0;
+		taskctl->tasks0[i].sel = (TASK_GDT0 + i) * 8;
+		set_segmdesc(gdt + TASK_GDT0 + i, 103, (int) &taskctl->tasks0[i].tss, AR_TSS32);
+	}
+	task = task_alloc();
+	task->flags = 2; /* 動作中マーク */
+	task->priority = 2; /* 0.02秒 */
 	taskctl->running = 1;
 	taskctl->now = 0;
 	taskctl->tasks[0] = task;
@@ -56,10 +56,10 @@ struct TASK *task_alloc(void)
 
 void task_run(struct TASK *task, int priority)
 {
-    if (priority > 0) {
-        task->priority = priority;
-    }
-    if (task->flags != 2) {
+	if (priority > 0) {
+		task->priority = priority;
+	}
+	if (task->flags != 2) {
 		task->flags = 2; /* 動作中マーク */
 		taskctl->tasks[taskctl->running] = task;
 		taskctl->running++;
@@ -82,38 +82,23 @@ void task_switch(void)
 	return;
 }
 
-void mt_taskswitch(void)
-{
-    timer_settime(task_timer, 2);
-	if (taskctl->running >= 2) {
-		taskctl->now++;
-		if (taskctl->now == taskctl->running) {
-			taskctl->now = 0;
-		}
-		farjmp(0, taskctl->tasks[taskctl->now]->sel);
-	}
-	return;
-}
-
 void task_sleep(struct TASK *task)
 {
-    int i;
-    char ts = 0;
-    if (task ->flags == 2) {
-        if (task == taskctl->tasks[taskctl->now]) {
-            ts = 1;
-        }
-        for (i = 0; i < taskctl->running; i++) {
-            if (taskctl->tasks[i] == task) {
-                break;
-            }
-        }
-        taskctl->running--;
-        if (i < taskctl->now) {
-			taskctl->now--; /* ずれるので、これもあわせておく */
+	int i;
+	char ts = 0;
+	if (task->flags == 2) {
+		if (task == taskctl->tasks[taskctl->now]) {
+			ts = 1;
 		}
-
-        /* ずらし */
+		for (i = 0; i < taskctl->running; i++) {
+			if (taskctl->tasks[i] == task) {
+				break;
+			}
+		}
+		taskctl->running--;
+		if (i < taskctl->now) {
+			taskctl->now--;
+		}
 		for (; i < taskctl->running; i++) {
 			taskctl->tasks[i] = taskctl->tasks[i + 1];
 		}
@@ -126,6 +111,6 @@ void task_sleep(struct TASK *task)
 			}
 			farjmp(0, taskctl->tasks[taskctl->now]->sel);
 		}
-    }
-    return;
+	}
+	return;
 }
