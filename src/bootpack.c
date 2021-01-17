@@ -21,7 +21,7 @@ void HariMain(void)
 	char s[40];
 	int fifobuf[128];
 	struct TIMER *timer, *timer2, *timer3, *timer_ts;
-	int mx, my, i, cursor_x, cursor_c, task_b_esp;
+	int mx, my, i, cursor_x, cursor_c;
 	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
