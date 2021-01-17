@@ -7,10 +7,10 @@ void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, i
 void HariMain(void)
 {
 	struct BOOTINFO *binfo = (struct BOOTINFO *) ADR_BOOTINFO;
-	struct FIFO8 timerfifo, timerfifo2, timerfifo3;
+	struct FIFO8 timerfifo;
 	char s[40], keybuf[32], mousebuf[128], timerbuf[8];
 	struct TIMER *timer, *timer2, *timer3;
-	int mx, my, i, count;
+	int mx, my, i, count = 0;
 	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
