@@ -1,7 +1,7 @@
 #include "bootpack.h"
 
 struct TASKCTL *taskctl;
-struct TIMER *mt_timer;
+struct TIMER *task_timer;
 
 struct TASK *task_init(struct MEMMAN *memman)
 {
