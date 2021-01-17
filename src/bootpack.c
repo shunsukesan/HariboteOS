@@ -1,8 +1,7 @@
 #include "bootpack.h"
 #include <stdio.h>
 
-void make_window8(unsigned char *buf, int xsize, int ysize, char *title);
-void putfont8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l);
+void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l);
 
 void HariMain(void)
 {
@@ -150,7 +149,7 @@ void HariMain(void)
 	return;
 }
 
-void putfont8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l)
+void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l)
 {
 	boxfill8(sht->buf, sht->bxsize, b, x, y, x + l * 8 - 1, y + 15);
 	putfonts8_asc(sht->buf, sht->bxsize, x, y, c, s);
