@@ -42,7 +42,7 @@ void HariMain(void)
 		0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 		0,   0,   0,   '_', 0,   0,   0,   0,   0,   0,   0,   0,   0,   '|', 0,   0
 	};
-	int key_to = 0, key_shift = 0;;
+	int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7;
 
 	init_gdtidt();
 	init_pic();
@@ -141,6 +141,12 @@ void HariMain(void)
 					}
 				} else {
 					s[0] = 0;
+				}
+				// 条件によって小文字にする
+				if ('A' <= s[0] && s[0] <= 'Z') {
+					if (((key_leds & 4) == 0 && key_shift == 0) || ((key_leds & 4) != 0 && key_shift != 0)) {
+						s[0] += 0x20; // 小文字に変換
+					}
 				}
 				if (s[0] != 0) { /* 通常文字 */
 					if (key_to == 0) {	/* タスクAへ */
