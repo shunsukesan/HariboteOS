@@ -121,19 +121,20 @@ void HariMain(void)
 			if (256 <= i && i <= 511) { /* キーボードデータ */
 				sprintf(s, "%02X", i - 256);
 				putfonts8_asc_sht(sht_back, 0, 16, COL8_FFFFFF, COL8_008484, s, 2);
-				if (i < 0x54 + 256 && keytable[i-256] != 0) { // 通常文字
-					if (key_to == 0) { // タスクA
+				if (i < 0x54 + 256 && keytable[i - 256] != 0) { /* 通常文字 */
+					if (key_to == 0) {	/* タスクAへ */
 						if (cursor_x < 128) {
-							s[0] = keytable[i-256];
+							/* 一文字表示してから、カーソルを1つ進める */
+							s[0] = keytable[i - 256];
 							s[1] = 0;
 							putfonts8_asc_sht(sht_win, cursor_x, 28, COL8_000000, COL8_FFFFFF, s, 1);
 							cursor_x += 8;
 						}
-					} else { // コンソール
-						fifo32_put(&task_cons->fifo, keytable[i-256] + 256);
+					} else {	/* コンソールへ */
+						fifo32_put(&task_cons->fifo, keytable[i - 256] + 256);
 					}
 				}
-				if (i == 256 + 0x0e && cursor_x > 8) { /* バックスペース */
+				if (i == 256 + 0x0e) {	/* バックスペース */
 					if (key_to == 0) {	/* タスクAへ */
 						if (cursor_x > 8) {
 							/* カーソルをスペースで消してから、カーソルを1つ戻す */
