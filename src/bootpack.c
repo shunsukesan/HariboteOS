@@ -453,7 +453,7 @@ void console_task(struct SHEET *sheet)
 				cursor_c = COL8_FFFFFF;
 			}
 			if (i == 3) {	/* カーソルOFF */
-				boxfill8(sheet->buf, sheet->bxsize, COL8_000000, cursor_x, 28, cursor_x + 7, 43);
+				boxfill8(sheet->buf, sheet->bxsize, COL8_000000, cursor_x, cursor_y, cursor_x + 7, cursor_y + 15);
 				cursor_c = -1;
 			}
 			if (256 <= i && i <= 511) { /* キーボードデータ（タスクA経由） */
@@ -461,7 +461,7 @@ void console_task(struct SHEET *sheet)
 					/* バックスペース */
 					if (cursor_x > 16) {
 						/* カーソルをスペースで消してから、カーソルを1つ戻す */
-						putfonts8_asc_sht(sheet, cursor_x, 28, COL8_FFFFFF, COL8_000000, " ", 1);
+						putfonts8_asc_sht(sheet, cursor_x, cursor_y, COL8_FFFFFF, COL8_000000, " ", 1);
 						cursor_x -= 8;
 					}
 				} else if (i == 10 + 256) {
@@ -479,7 +479,7 @@ void console_task(struct SHEET *sheet)
 						/* 一文字表示してから、カーソルを1つ進める */
 						s[0] = i - 256;
 						s[1] = 0;
-						putfonts8_asc_sht(sheet, cursor_x, 28, COL8_FFFFFF, COL8_000000, s, 1);
+						putfonts8_asc_sht(sheet, cursor_x, cursor_y, COL8_FFFFFF, COL8_000000, s, 1);
 						cursor_x += 8;
 					}
 				}
