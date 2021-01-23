@@ -479,17 +479,10 @@ void console_task(struct SHEET *sheet, unsigned int memtotal)
 							}
 						}
 						cursor_y = cons_newline(cursor_y, sheet);
-					} else if (cmdline[0] != 0) {
-						/* コマンドではなく、さらに空行でもない */
-						putfonts8_asc_sht(sheet, 8, cursor_y, COL8_FFFFFF, COL8_000000, "Bad command.", 12);
-						cursor_y = cons_newline(cursor_y, sheet);
-						cursor_y = cons_newline(cursor_y, sheet);
-					}
-					/* プロンプト表示 */
-					putfonts8_asc_sht(sheet, 8, cursor_y, COL8_FFFFFF, COL8_000000, ">", 1);
-					cursor_x = 16;
-				} else if (strncmp(cmdline, "type ", 5) == 0) {
-					for (y = 0; y < 11; y++) {
+					} else if (strncmp(cmdline, "type ", 5) == 0) {
+						/* typeコマンド */
+						/* ファイル名を準備する */
+						for (y = 0; y < 11; y++) {
 							s[y] = ' ';
 						}
 						y = 0;
@@ -527,6 +520,7 @@ void console_task(struct SHEET *sheet, unsigned int memtotal)
 							p = (char *) (finfo[x].clustno * 512 + 0x003e00 + ADR_DISKIMG);
 							cursor_x = 8;
 							for (x = 0; x < y; x++) {
+								/* 1文字ずつ出力 */
 								s[0] = p[x];
 								s[1] = 0;
 								if (s[0] == 0x09) {	/* タブ */
@@ -561,6 +555,15 @@ void console_task(struct SHEET *sheet, unsigned int memtotal)
 							cursor_y = cons_newline(cursor_y, sheet);
 						}
 						cursor_y = cons_newline(cursor_y, sheet);
+					} else if (cmdline[0] != 0) {
+						/* コマンドではなく、さらに空行でもない */
+						putfonts8_asc_sht(sheet, 8, cursor_y, COL8_FFFFFF, COL8_000000, "Bad command.", 12);
+						cursor_y = cons_newline(cursor_y, sheet);
+						cursor_y = cons_newline(cursor_y, sheet);
+					}
+					/* プロンプト表示 */
+					putfonts8_asc_sht(sheet, 8, cursor_y, COL8_FFFFFF, COL8_000000, ">", 1);
+					cursor_x = 16;
 				} else {
 					/* 一般文字 */
 					if (cursor_x < 240) {
