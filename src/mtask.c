@@ -75,6 +75,7 @@ struct TASK *task_init(struct MEMMAN *memman)
 	int i;
 	struct TASK *task, *idle;
 	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
+
 	taskctl = (struct TASKCTL *) memman_alloc_4k(memman, sizeof (struct TASKCTL));
 	for (i = 0; i < MAX_TASKS; i++) {
 		taskctl->tasks0[i].flags = 0;
@@ -85,6 +86,7 @@ struct TASK *task_init(struct MEMMAN *memman)
 		taskctl->level[i].running = 0;
 		taskctl->level[i].now = 0;
 	}
+
 	task = task_alloc();
 	task->flags = 2;	/* 動作中マーク */
 	task->priority = 2; /* 0.02秒 */
@@ -94,7 +96,7 @@ struct TASK *task_init(struct MEMMAN *memman)
 	load_tr(task->sel);
 	task_timer = timer_alloc();
 	timer_settime(task_timer, task->priority);
-	
+
 	idle = task_alloc();
 	idle->tss.esp = memman_alloc_4k(memman, 64 * 1024) + 64 * 1024;
 	idle->tss.eip = (int) &task_idle;
@@ -139,7 +141,7 @@ struct TASK *task_alloc(void)
 
 void task_run(struct TASK *task, int level, int priority)
 {
-    if (level < 0) {
+	if (level < 0) {
 		level = task->level; /* レベルを変更しない */
 	}
 	if (priority > 0) {
@@ -159,6 +161,23 @@ void task_run(struct TASK *task, int level, int priority)
 	return;
 }
 
+void task_sleep(struct TASK *task)
+{
+	struct TASK *now_task;
+	if (task->flags == 2) {
+		/* 動作中だったら */
+		now_task = task_now();
+		task_remove(task); /* これを実行するとflagsは1になる */
+		if (task == now_task) {
+			/* 自分自身のスリープだったので、タスクスイッチが必要 */
+			task_switchsub();
+			now_task = task_now(); /* 設定後での、「現在のタスク」を教えてもらう */
+			farjmp(0, now_task->sel);
+		}
+	}
+	return;
+}
+
 void task_switch(void)
 {
 	struct TASKLEVEL *tl = &taskctl->level[taskctl->now_lv];
@@ -175,23 +194,6 @@ void task_switch(void)
 	timer_settime(task_timer, new_task->priority);
 	if (new_task != now_task) {
 		farjmp(0, new_task->sel);
-	}
-	return;
-}
-
-void task_sleep(struct TASK *task)
-{
-	struct TASK *now_task;
-	if (task->flags == 2) {
-		/* 動作中だったら */
-		now_task = task_now();
-		task_remove(task); /* これを実行するとflagsは1になる */
-		if (task == now_task) {
-			/* 自分自身のスリープだったので、タスクスイッチが必要 */
-			task_switchsub();
-			now_task = task_now(); /* 設定後での、「現在のタスク」を教えてもらう */
-			farjmp(0, now_task->sel);
-		}
 	}
 	return;
 }
