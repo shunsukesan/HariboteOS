@@ -1,3 +1,4 @@
+
 ; naskfunc
 ; TAB=4
 
@@ -108,8 +109,8 @@ _store_cr0:		; void store_cr0(int cr0);
 		MOV		CR0,EAX
 		RET
 
-_load_tr:
-		LTR		[ESP+4] ; tr
+_load_tr:		; void load_tr(int tr);
+		LTR		[ESP+4]			; tr
 		RET
 
 _asm_inthandler20:
@@ -209,18 +210,10 @@ mts_fin:
 		POP		EDI
 		RET
 
-_taskswitch3:	; void taskswitch3(void);
-		JMP		3*8:0
-		RET
-
-_taskswitch4:	; void taskswitch4(void);
-		JMP		4*8:0
-		RET
-
 _farjmp:		; void farjmp(int eip, int cs);
 		JMP		FAR	[ESP+4]				; eip, cs
 		RET
-		
+
 _asm_cons_putchar:
 		PUSH	1
 		AND		EAX,0xff	; AHやEAXの上位を0にして、EAXに文字コードが入った状態にする。
