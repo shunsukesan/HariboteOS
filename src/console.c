@@ -175,7 +175,7 @@ void cons_runcmd(char *cmdline, struct CONSOLE *cons, int *fat, unsigned int mem
 		cmd_type(cons, fat, cmdline);
 	} else if (cmdline[0] != 0) {
 		if (cmd_app(cons, fat, cmdline) == 0) {
-			cons_putstr0(cons, "Bad command.¥n¥n");
+			cons_putstr0(cons, "Bad command.\n\n");
 		}
 	}
 	return;
@@ -186,7 +186,6 @@ void cmd_mem(struct CONSOLE *cons, unsigned int memtotal)
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
 	char s[60];
 	sprintf(s, "total   %dMB\nfree %dKB\n\n", memtotal / (1024 * 1024), memman_total(memman) / 1024);
-	sprintf(s, "free %dKB", memman_total(memman) / 1024);
 	cons_putstr0(cons, s);
 	return;
 }
@@ -258,6 +257,7 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline)
 	char name[18], *p;
 	int i;
 
+	/* コマンドラインからファイル名を生成 */
 	for (i = 0; i < 13; i++) {
 		if (cmdline[i] <= ' ') {
 			break;
@@ -287,7 +287,6 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline)
 		cons_newline(cons);
 		return 1;
 	}
-
 	return 0;
 }
 
