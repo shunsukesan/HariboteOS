@@ -10,4 +10,3 @@
 		MOV		AL,'o'
 		INT		0x40
 		RETF
-		
