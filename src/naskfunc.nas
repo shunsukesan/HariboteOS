@@ -134,38 +134,13 @@ _asm_inthandler21:
 		PUSH	ES
 		PUSH	DS
 		PUSHAD
-		MOV		AX,SS
-		CMP		AX,1*8
-		JNE		.from_app
-;	OSが動いているときに割り込まれたのでほぼ今までどおり
 		MOV		EAX,ESP
-		PUSH	SS				; 割り込まれたときのSSを保存
-		PUSH	EAX				; 割り込まれたときのESPを保存
+		PUSH	EAX
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
 		CALL	_inthandler21
-		ADD		ESP,8
-		POPAD
-		POP		DS
-		POP		ES
-		IRETD
-.from_app:
-;	アプリが動いているときに割り込まれた
-		MOV		EAX,1*8
-		MOV		DS,AX			; とりあえずDSだけOS用にする
-		MOV		ECX,[0xfe4]		; OSのESP
-		ADD		ECX,-8
-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
-		MOV		SS,AX
-		MOV		ES,AX
-		MOV		ESP,ECX
-		CALL	_inthandler21
-		POP		ECX
 		POP		EAX
-		MOV		SS,AX			; SSをアプリ用に戻す
-		MOV		ESP,ECX			; ESPもアプリ用に戻す
 		POPAD
 		POP		DS
 		POP		ES
@@ -175,38 +150,13 @@ _asm_inthandler27:
 		PUSH	ES
 		PUSH	DS
 		PUSHAD
-		MOV		AX,SS
-		CMP		AX,1*8
-		JNE		.from_app
-;	OSが動いているときに割り込まれたのでほぼ今までどおり
 		MOV		EAX,ESP
-		PUSH	SS				; 割り込まれたときのSSを保存
-		PUSH	EAX				; 割り込まれたときのESPを保存
+		PUSH	EAX
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
 		CALL	_inthandler27
-		ADD		ESP,8
-		POPAD
-		POP		DS
-		POP		ES
-		IRETD
-.from_app:
-;	アプリが動いているときに割り込まれた
-		MOV		EAX,1*8
-		MOV		DS,AX			; とりあえずDSだけOS用にする
-		MOV		ECX,[0xfe4]		; OSのESP
-		ADD		ECX,-8
-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
-		MOV		SS,AX
-		MOV		ES,AX
-		MOV		ESP,ECX
-		CALL	_inthandler27
-		POP		ECX
 		POP		EAX
-		MOV		SS,AX			; SSをアプリ用に戻す
-		MOV		ESP,ECX			; ESPもアプリ用に戻す
 		POPAD
 		POP		DS
 		POP		ES
@@ -216,38 +166,13 @@ _asm_inthandler2c:
 		PUSH	ES
 		PUSH	DS
 		PUSHAD
-		MOV		AX,SS
-		CMP		AX,1*8
-		JNE		.from_app
-;	OSが動いているときに割り込まれたのでほぼ今までどおり
 		MOV		EAX,ESP
-		PUSH	SS				; 割り込まれたときのSSを保存
-		PUSH	EAX				; 割り込まれたときのESPを保存
+		PUSH	EAX
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
 		CALL	_inthandler2c
-		ADD		ESP,8
-		POPAD
-		POP		DS
-		POP		ES
-		IRETD
-.from_app:
-;	アプリが動いているときに割り込まれた
-		MOV		EAX,1*8
-		MOV		DS,AX			; とりあえずDSだけOS用にする
-		MOV		ECX,[0xfe4]		; OSのESP
-		ADD		ECX,-8
-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
-		MOV		SS,AX
-		MOV		ES,AX
-		MOV		ESP,ECX
-		CALL	_inthandler2c
-		POP		ECX
 		POP		EAX
-		MOV		SS,AX			; SSをアプリ用に戻す
-		MOV		ESP,ECX			; ESPもアプリ用に戻す
 		POPAD
 		POP		DS
 		POP		ES
@@ -272,7 +197,7 @@ _asm_inthandler0d:
 		POP		ES
 		ADD		ESP,4			; INT 0x0d では、これが必要
 		IRETD
-		
+
 _memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
 		PUSH	EDI						; （EBX, ESI, EDI も使いたいので）
 		PUSH	ESI
@@ -335,7 +260,7 @@ end_app:
 ;	EAXはtss.esp0の番地
 		MOV		ESP,[EAX]
 		POPAD
-		RET	
+		RET					; cmd_appへ帰る
 
 _start_app:		; void start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
 		PUSHAD		; 32ビットレジスタを全部保存しておく
