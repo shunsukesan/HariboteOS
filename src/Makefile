@@ -151,6 +151,7 @@ haribote.img : ipl10.bin haribote.sys Makefile \
 		copy from:star1.hrb to:@: \
 		copy from:stars.hrb to:@: \
 		copy from:stars2.hrb to:@: \
+		copy from:lines.hrb to:@: \
 		copy from:walk.hrb to:@: \
 		imgout:haribote.img
 
