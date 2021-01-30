@@ -16,7 +16,7 @@
 		GLOBAL	_asm_inthandler20, _asm_inthandler21
 		GLOBAL	_asm_inthandler27, _asm_inthandler2c
 		GLOBAL	_asm_inthandler0c, _asm_inthandler0d
-		GLOBAL	_memtest_sub
+		GLOBAL	_asm_end_app, _memtest_sub
 		GLOBAL	_farjmp, _farcall
 		GLOBAL	_asm_hrb_api, _start_app
 		EXTERN	_inthandler20, _inthandler21
@@ -279,6 +279,13 @@ _asm_hrb_api:
 end_app:
 ;	EAXはtss.esp0の番地
 		MOV		ESP,[EAX]
+		POPAD
+		RET					; cmd_appへ帰る
+
+_asm_end_app:
+;	EAXはtss.esp0の番地
+		MOV		ESP,[EAX]
+		MOV		DWORD [EAX+4],0
 		POPAD
 		RET					; cmd_appへ帰る
 
