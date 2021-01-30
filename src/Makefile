@@ -109,7 +109,6 @@ stars.bim : stars.obj a_nask.obj Makefile
 stars.hrb : stars.bim Makefile
 	$(BIM2HRB) stars.bim stars.hrb 47k
 
-
 haribote.img : ipl10.bin haribote.sys Makefile \
 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb \
 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb
