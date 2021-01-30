@@ -33,16 +33,17 @@ struct SHTCTL *shtctl_init(struct MEMMAN *memman, unsigned char *vram, int xsize
 struct SHEET *sheet_alloc(struct SHTCTL *ctl)
 {
     struct SHEET *sht;
-    int i;
-    for (i = 0; i < MAX_SHEETS; i++) {
-        if (ctl->sheets0[i].flags == 0) {
-            sht = &ctl->sheets0[i];
-            sht->flags = SHEET_USE;
-            sht->height = -1;
-            return sht;
-        }
-    }
-    return 0;
+	int i;
+	for (i = 0; i < MAX_SHEETS; i++) {
+		if (ctl->sheets0[i].flags == 0) {
+			sht = &ctl->sheets0[i];
+			sht->flags = SHEET_USE; /* 使用中マーク */
+			sht->height = -1; /* 非表示中 */
+			sht->task = 0;	/* 自動で閉じる機能を使わない */
+			return sht;
+		}
+	}
+	return 0;
 }
 
 void sheet_setbuf(struct SHEET *sht, unsigned char *buf, int xsize, int ysize, int col_inv)
