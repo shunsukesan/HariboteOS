@@ -98,7 +98,7 @@ winhelo3.hrb : winhelo3.bim Makefile
 haribote.img : ipl10.bin haribote.sys Makefile \
 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb \
 		winhelo.hrb winhelo2.hrb winhelo3.hrb
-	$(EDIMG)   imgin:../../z_tools/fdimg0at.tek \
+	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
 		copy from:haribote.sys to:@: \
 		copy from:ipl10.nas to:@: \
