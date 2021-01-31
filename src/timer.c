@@ -148,7 +148,7 @@ int timer_cancel(struct TIMER *timer)
 	return 0;
 }
 
-void timer_cancelcall(struct FIFO32 *fifo)
+void timer_cancelall(struct FIFO32 *fifo)
 {
 	int e, i;
 	struct TIMER *t;
