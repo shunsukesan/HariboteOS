@@ -250,6 +250,22 @@ void cmd_type(struct CONSOLE *cons, int *fat, char *cmdline)
 	return;
 }
 
+void cmd_exit(struct CONSOLE *cons, int *fat)
+{
+	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
+	struct TASK *task = task_now();
+	struct SHTCTL *shtctl = (struct SHTCTL *) *((int *) 0x0fe4);
+	struct FIFO32 *fifo = (struct FIFO32 *) *((int *) 0x0fec);
+	timer_cancel(cons->timer);
+	memman_free_4k(memman, (int) fat, 4 * 2880);
+	io_cli();
+	fifo32_put(fifo, cons->sht - shtctl->sheets0 + 768);	/* 768～1023 */
+	io_sti();
+	for (;;) {
+		task_sleep(task);
+	}
+}
+
 int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline)
 {
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
@@ -318,22 +334,6 @@ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline)
 	}
 	/* ファイルが見つからなかった場合 */
 	return 0;
-}
-
-void cmd_exit(struct CONSOLE *cons, int *fat)
-{
-	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
-	struct TASK *task = task_now();
-	struct SHTCTL *shtctl = (struct SHTCTL *) *((int *) 0x0fe4);
-	struct FIFO32 *fifo = (struct FIFO32 *) *((int *) 0x0fec);
-	timer_cancel(cons->timer);
-	memman_free_4k(memman, (int) fat, 4 * 2880);
-	io_cli();
-	fifo32_put(fifo, cons->sht - shtctl->sheets0 + 768);	/* 768～1023 */
-	io_sti();
-	for (;;) {
-		task_sleep(task);
-	}
 }
 
 int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax)
