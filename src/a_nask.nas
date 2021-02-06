@@ -127,7 +127,7 @@ _api_free:			; void api_free(char *addr, int size);
 		INT		0x40
 		POP		EBX
 		RET
-		
+
 _api_point:		; void api_point(int win, int x, int y, int col);
 		PUSH	EDI
 		PUSH	ESI
@@ -192,7 +192,6 @@ _api_getkey:		; int api_getkey(int mode);
 		INT		0x40
 		RET
 
-
 _api_alloctimer:	; int api_alloctimer(void);
 		MOV		EDX,16
 		INT		0x40
@@ -229,3 +228,4 @@ _api_beep:			; void api_beep(int tone);
 		MOV		EAX,[ESP+4]			; tone
 		INT		0x40
 		RET
+		
