@@ -211,7 +211,7 @@ struct TASK {
 	struct FIFO32 fifo;
 	struct TSS32 tss;
 	struct CONSOLE *cons;
-	int ds_base;
+	int ds_base, cons_stack;
 };
 struct TASKLEVEL {
 	int running; /* 動作しているタスクの数 */
@@ -272,3 +272,4 @@ void file_readfat(int *fat, unsigned char *img);
 void file_loadfile(int clustno, int size, char *buf, int *fat, char *img);
 struct FILEINFO *file_search(char *name, struct FILEINFO *finfo, int max);
 
+:w
