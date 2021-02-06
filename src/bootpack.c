@@ -13,14 +13,14 @@ void HariMain(void)
 	struct SHTCTL *shtctl;
 	char s[40];
 	struct FIFO32 fifo, keycmd;
-	int fifobuf[128], keycmd_buf[32], *cons_fifo[2];
-	int mx, my, i;
+	int fifobuf[128], keycmd_buf[32];
+	int mx, my, i, new_mx = -1, new_my = 0, new_wx = 0x7fffffff, new_wy = 0;
 	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
-	unsigned char *buf_back, buf_mouse[256], *buf_cons[2];
+	unsigned char *buf_back, buf_mouse[256];
 	struct SHEET *sht_back, *sht_mouse, *sht_cons[2];
-	struct TASK *task_a, *task_cons[2], *task;
+	struct TASK *task_a, *task;
 	static char keytable0[0x80] = {
 		0,   0,   '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '^', 0x08, 0,
 		'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '@', '[', 0x0a, 0, 'A', 'S',
@@ -92,6 +92,7 @@ void HariMain(void)
 	sheet_updown(sht_cons[0],  1);
 	sheet_updown(sht_mouse,    2);
 	key_win = sht_cons[0];
+	keywin_on(key_win);
 
 	/* 最初にキーボード状態との食い違いがないように、設定しておくことにする */
 	fifo32_put(&keycmd, KEYCMD_LED);
@@ -106,8 +107,19 @@ void HariMain(void)
 		}
 		io_cli();
 		if (fifo32_status(&fifo) == 0) {
-			task_sleep(task_a);
-			io_sti();
+			/* FIFOがからっぽになったので、保留している描画があれば実行する */
+			if (new_mx >= 0) {
+				io_sti();
+				sheet_slide(sht_mouse, new_mx, new_my);
+				new_mx = -1;
+			} else if (new_wx != 0x7fffffff) {
+				io_sti();
+				sheet_slide(sht, new_wx, new_wy);
+				new_wx = 0x7fffffff;
+			} else {
+				task_sleep(task_a);
+				io_sti();
+			}
 		} else {
 			i = fifo32_get(&fifo);
 			io_sti();
@@ -170,9 +182,9 @@ void HariMain(void)
 					fifo32_put(&keycmd, KEYCMD_LED);
 					fifo32_put(&keycmd, key_leds);
 				}
-				if (i == 256 + 0x3b && key_shift != 0) {
+				if (i == 256 + 0x3b && key_shift != 0) {	/* Shift+F1 */
 					task = key_win->task;
-					if (task != 0 && task->tss.ss0 != 0) {	/* Shift+F1 */
+					if (task != 0 && task->tss.ss0 != 0) {
 						cons_putstr0(task->cons, "\nBreak(key) :\n");
 						io_cli();	/* 強制終了処理中にタスクが変わると困るから */
 						task->tss.eax = (int) &(task->tss.esp0);
@@ -180,10 +192,11 @@ void HariMain(void)
 						io_sti();
 					}
 				}
-				if (i == 256 + 0x3b && key_shift != 0) { /* Shift+F1 */
+				if (i == 256 + 0x3c && key_shift != 0 && sht_cons[1] == 0) {	/* Shift+F2 */
 					sht_cons[1] = open_console(shtctl, memtotal);
 					sheet_slide(sht_cons[1], 32, 4);
 					sheet_updown(sht_cons[1], shtctl->top);
+					/* 新しく作ったコンソールを入力選択状態にする（そのほうが親切だよね？） */
 					keywin_off(key_win);
 					key_win = sht_cons[1];
 					keywin_on(key_win);
@@ -215,7 +228,8 @@ void HariMain(void)
 					if (my > binfo->scrny - 1) {
 						my = binfo->scrny - 1;
 					}
-					sheet_slide(sht_mouse, mx, my);
+					new_mx = mx;
+					new_my = my;
 					if ((mdec.btn & 0x01) != 0) {
 						/* 左ボタンを押している */
 						if (mmx < 0) {
@@ -237,6 +251,7 @@ void HariMain(void)
 											mmx = mx;	/* ウィンドウ移動モードへ */
 											mmy = my;
 											mmx2 = sht->vx0;
+											new_wy = sht->vy0;
 										}
 										if (sht->bxsize - 21 <= x && x < sht->bxsize - 5 && 5 <= y && y < 19) {
 											/* 「×」ボタンクリック */
@@ -257,12 +272,17 @@ void HariMain(void)
 							/* ウィンドウ移動モードの場合 */
 							x = mx - mmx;	/* マウスの移動量を計算 */
 							y = my - mmy;
-							sheet_slide(sht, (mmx2 + x + 2) & ~3, sht->vy0 + y);
+							new_wx = (mmx2 + x + 2) & ~3;
+							new_wy = new_wy + y;
 							mmy = my;	/* 移動後の座標に更新 */
 						}
 					} else {
 						/* 左ボタンを押していない */
 						mmx = -1;	/* 通常モードへ */
+						if (new_wx != 0x7fffffff) {
+							sheet_slide(sht, new_wx, new_wy);	/* 一度確定させる */
+							new_wx = 0x7fffffff;
+						}
 					}
 				}
 			}
